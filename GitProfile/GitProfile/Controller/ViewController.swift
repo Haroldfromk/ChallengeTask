@@ -8,6 +8,7 @@ class ViewController: UIViewController {
     let gitManager = GitManager()
     
     var gitList = [GitModel]()
+    var repoList = [GitRepoModel]()
     
     // MARK: - 프로필 이미지
     var profileImageView: UIImageView = {
@@ -21,9 +22,9 @@ class ViewController: UIViewController {
     var idLabel: UILabel = {
         var label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "아이디"
+        label.text = "id"
         label.textAlignment = .left
-
+        
         
         return label
     }()
@@ -31,7 +32,7 @@ class ViewController: UIViewController {
     // MARK: - 지역정보
     var regionLabel: UILabel = {
         var label = UILabel()
-        label.text = "지역"
+        label.text = "region"
         label.textAlignment = .left
         label.translatesAutoresizingMaskIntoConstraints = false
         
@@ -41,7 +42,7 @@ class ViewController: UIViewController {
     // MARK: - Follower
     var followerLabel: UILabel = {
         var label = UILabel()
-        label.text = "Follwer 수"
+        label.text = "Follwer"
         label.textAlignment = .left
         label.translatesAutoresizingMaskIntoConstraints = false
         
@@ -51,7 +52,7 @@ class ViewController: UIViewController {
     // MARK: - Following
     var followingLabel: UILabel = {
         var label = UILabel()
-        label.text = "Follwer 수"
+        label.text = "Following"
         label.textAlignment = .left
         label.translatesAutoresizingMaskIntoConstraints = false
         
@@ -63,12 +64,10 @@ class ViewController: UIViewController {
         var table = UITableView()
         table.translatesAutoresizingMaskIntoConstraints = false
         table.register(UITableViewCell.self, forCellReuseIdentifier: Constants.identifier)
-        table.backgroundColor = .green
-        
+        //table.backgroundColor = .green
         return table
     }()
     
-    var lists = ["test", "title"]
     
     
     override func viewDidLoad() {
@@ -80,6 +79,7 @@ class ViewController: UIViewController {
         
         activateConstraints()
         gitManager.fetchRequest()
+        gitManager.fetchRequestRepo()
     }
     
     
@@ -117,7 +117,7 @@ class ViewController: UIViewController {
                                          ,followingLabel.topAnchor.constraint(equalTo: followerLabel.bottomAnchor, constant: 5)
                                          ,followingLabel.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -635)]
         
-        let tableViewConstraints = [tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor,constant: 10)
+        let tableViewConstraints = [tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor,constant: 5)
                                     ,tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor,constant: -10)
                                     ,tableView.topAnchor.constraint(equalTo: profileImageView.bottomAnchor,constant: 5)
                                     ,tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor,constant: -50)
@@ -135,24 +135,37 @@ class ViewController: UIViewController {
 
 
 // MARK: - TableView 기능
-extension ViewController : UITableViewDelegate, UITableViewDataSource {
+extension ViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
-        return lists.count
+        return repoList.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: Constants.identifier, for: indexPath)
-        cell.textLabel?.text = lists[indexPath.row]
+        cell.textLabel?.text = repoList[indexPath.row].name
+        cell.selectionStyle = .none
         
         return cell
     }
     
-    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if let url = URL(string: repoList[indexPath.row].html_url) {
+            UIApplication.shared.open(url)
+        }
+    }
 }
+
 
 // MARK: - GitManager로부터 User정보를 받아온다.
 extension ViewController: SendProfile {
+    func sendRepo(data: [GitRepoModel]) {
+        repoList = data
+        DispatchQueue.main.async {
+            self.tableView.reloadData()
+        }
+    }
+    
     func sendData(data: [GitModel]) {
         gitList = data
         DispatchQueue.main.async {
@@ -163,4 +176,8 @@ extension ViewController: SendProfile {
             self.followingLabel.text = "Following : \(String(self.gitList[0].following))"
         }
     }
+}
+
+#Preview{
+    ViewController()
 }

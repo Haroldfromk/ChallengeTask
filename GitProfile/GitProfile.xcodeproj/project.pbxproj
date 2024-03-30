@@ -17,6 +17,7 @@
 		61AEE3252BB6CF0F00A6AE94 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61AEE3242BB6CF0F00A6AE94 /* Constants.swift */; };
 		61F5EE5D2BB866EC007038E1 /* GitManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61F5EE5C2BB866EC007038E1 /* GitManager.swift */; };
 		61F5EE5F2BB866F4007038E1 /* GitModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61F5EE5E2BB866F4007038E1 /* GitModel.swift */; };
+		61F5EE652BB8A1C2007038E1 /* GitRepoModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61F5EE642BB8A1C2007038E1 /* GitRepoModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -32,6 +33,7 @@
 		61AEE3242BB6CF0F00A6AE94 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		61F5EE5C2BB866EC007038E1 /* GitManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitManager.swift; sourceTree = "<group>"; };
 		61F5EE5E2BB866F4007038E1 /* GitModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitModel.swift; sourceTree = "<group>"; };
+		61F5EE642BB8A1C2007038E1 /* GitRepoModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GitRepoModel.swift; sourceTree = "<group>"; };
 		A84E4E995AF94B3DC781FFEB /* Pods-GitProfile.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GitProfile.debug.xcconfig"; path = "Target Support Files/Pods-GitProfile/Pods-GitProfile.debug.xcconfig"; sourceTree = "<group>"; };
 		D1C47B9171696AD3EB5047FF /* Pods-GitProfile.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GitProfile.release.xcconfig"; path = "Target Support Files/Pods-GitProfile/Pods-GitProfile.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -97,6 +99,7 @@
 			children = (
 				61F5EE5C2BB866EC007038E1 /* GitManager.swift */,
 				61F5EE5E2BB866F4007038E1 /* GitModel.swift */,
+				61F5EE642BB8A1C2007038E1 /* GitRepoModel.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -244,6 +247,7 @@
 				61AEE3112BB6CCB200A6AE94 /* AppDelegate.swift in Sources */,
 				61AEE3132BB6CCB200A6AE94 /* SceneDelegate.swift in Sources */,
 				61F5EE5F2BB866F4007038E1 /* GitModel.swift in Sources */,
+				61F5EE652BB8A1C2007038E1 /* GitRepoModel.swift in Sources */,
 				61AEE3252BB6CF0F00A6AE94 /* Constants.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
