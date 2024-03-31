@@ -7,7 +7,7 @@ class ViewController: UIViewController {
     
     let gitManager = GitManager()
     
-    var gitList = [GitModel]()
+    var gitList: [GitModel] = []
     var repoList = [GitRepoModel]()
     
     // MARK: - 프로필 이미지
@@ -25,6 +25,16 @@ class ViewController: UIViewController {
         label.text = "id"
         label.textAlignment = .left
         
+        
+        return label
+    }()
+    
+    // MARK: - 이름
+    var nameLabel: UILabel = {
+        var label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.text = "name"
+        label.textAlignment = .left
         
         return label
     }()
@@ -64,12 +74,12 @@ class ViewController: UIViewController {
         var table = UITableView()
         table.translatesAutoresizingMaskIntoConstraints = false
         table.register(UITableViewCell.self, forCellReuseIdentifier: Constants.identifier)
-        //table.backgroundColor = .green
+        
+
         return table
     }()
     
-    
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
@@ -80,6 +90,17 @@ class ViewController: UIViewController {
         activateConstraints()
         gitManager.fetchRequest()
         gitManager.fetchRequestRepo()
+        tableView.refreshControl = UIRefreshControl()
+        tableView.refreshControl?.addTarget(self, action: #selector(didPullToRefresh), for: .valueChanged)
+        
+    }
+    
+    @objc func didPullToRefresh() {
+        gitManager.fetchRequestRepo()
+        DispatchQueue.main.asyncAfter(deadline: .now()+1) {
+            self.tableView.refreshControl?.endRefreshing()
+            self.tableView.reloadData()
+        }
     }
     
     
@@ -87,44 +108,51 @@ class ViewController: UIViewController {
     func activateConstraints() {
         view.addSubview(profileImageView)
         view.addSubview(idLabel)
+        view.addSubview(nameLabel)
         view.addSubview(regionLabel)
         view.addSubview(followerLabel)
         view.addSubview(followingLabel)
         view.addSubview(tableView)
         
-        let imageViewConstraints = [profileImageView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor,constant: 10)
-                                    ,profileImageView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor,constant: -250)
+        let imageViewConstraints = [profileImageView.heightAnchor.constraint(equalToConstant: 150),
+                                    profileImageView.widthAnchor.constraint(equalToConstant: 150)
+                                    ,profileImageView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor,constant: 10)
                                     ,profileImageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor)
-                                    ,profileImageView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor,constant: -600)]
+        ]
         
         let idLabelConstraints = [idLabel.leadingAnchor.constraint(equalTo: profileImageView.trailingAnchor,constant: 10)
                                   ,idLabel.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor,constant: -10)
-                                  ,idLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor)
-                                  ,idLabel.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor,constant: -720)]
+                                  ,idLabel.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor,constant: 15)
+        ]
+        
+        let nameLabelConstraints = [nameLabel.leadingAnchor.constraint(equalTo: profileImageView.trailingAnchor,constant: 10)
+                                    ,nameLabel.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor,constant: -10)
+                                    ,nameLabel.topAnchor.constraint(equalTo: idLabel.bottomAnchor, constant: 5)]
         
         let regionLabelConstraints = [regionLabel.leadingAnchor.constraint(equalTo: profileImageView.trailingAnchor,constant: 10)
                                       ,regionLabel.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor,constant: -10)
-                                      ,regionLabel.topAnchor.constraint(equalTo: idLabel.bottomAnchor, constant: 5)
-                                      ,regionLabel.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -700)]
+                                      ,regionLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 5)
+        ]
         
         let followerLabelConstraints = [followerLabel.leadingAnchor.constraint(equalTo: profileImageView.trailingAnchor, constant: 10)
                                         ,followerLabel.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor,constant: -10)
                                         ,followerLabel.topAnchor.constraint(equalTo: regionLabel.bottomAnchor, constant: 5)
-                                        ,followerLabel.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -665)]
+        ]
         
         let followingLabelConstraints = [followingLabel.leadingAnchor.constraint(equalTo: profileImageView.trailingAnchor, constant: 10)
                                          ,followingLabel.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor,constant: -10)
                                          ,followingLabel.topAnchor.constraint(equalTo: followerLabel.bottomAnchor, constant: 5)
-                                         ,followingLabel.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -635)]
+        ]
         
         let tableViewConstraints = [tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor,constant: 5)
                                     ,tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor,constant: -10)
-                                    ,tableView.topAnchor.constraint(equalTo: profileImageView.bottomAnchor,constant: 5)
+                                    ,tableView.topAnchor.constraint(equalTo: profileImageView.bottomAnchor,constant: 10)
                                     ,tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor,constant: -50)
         ]
         
         NSLayoutConstraint.activate(imageViewConstraints)
         NSLayoutConstraint.activate(idLabelConstraints)
+        NSLayoutConstraint.activate(nameLabelConstraints)
         NSLayoutConstraint.activate(regionLabelConstraints)
         NSLayoutConstraint.activate(followerLabelConstraints)
         NSLayoutConstraint.activate(followingLabelConstraints)
@@ -171,6 +199,7 @@ extension ViewController: SendProfile {
         DispatchQueue.main.async {
             self.profileImageView.kf.setImage(with: URL(string: self.gitList[0].avatar_url))
             self.idLabel.text = "User ID : \(self.gitList[0].login)"
+            self.nameLabel.text = "Name : \(self.gitList[0].name)"
             self.regionLabel.text = "Location : \(self.gitList[0].location)"
             self.followerLabel.text = "Follower : \(String(self.gitList[0].followers))"
             self.followingLabel.text = "Following : \(String(self.gitList[0].following))"
