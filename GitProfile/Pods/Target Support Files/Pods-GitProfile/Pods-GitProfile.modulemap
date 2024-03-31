@@ -1,0 +1,6 @@
+framework module Pods_GitProfile {
+  umbrella header "Pods-GitProfile-umbrella.h"
+
+  export *
+  module * { export * }
+}
