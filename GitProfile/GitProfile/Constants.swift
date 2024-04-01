@@ -11,4 +11,6 @@ struct Constants {
     
     static var identifier = "RepoCell"
     static var cellName = "RepoTableViewCell"
+    static var secondCellName = "LoadingCell"
+    
 }

@@ -57,24 +57,27 @@ class GitManager {
         }
     }
     
-    func fetchRequestAppleRepo () {
+    func fetchRequestAppleRepo (page: Int, hasNext: Bool) {
         
-        let appleURL = "https://api.github.com/users/apple"
+        var gap = repoLists.count
         
-        AF.request(appleURL+"/repos", method: .get).responseDecodable(of: [GitRepoModel].self
-        ) { response in
-
-            switch response.result {
-            case .success(let decodedData) :
-                do {
-                    for data in decodedData {
-                        let list = GitRepoModel(name: data.name, html_url: data.html_url, language: data.language)
-                        self.repoLists.append(list)
+        if hasNext {
+            let appleURL = "https://api.github.com/users/apple/repos?page="
+            
+            AF.request(appleURL+String(page), method: .get).responseDecodable(of: [GitRepoModel].self
+            ) { response in
+                switch response.result {
+                case .success(let decodedData) :
+                    do {
+                        for data in decodedData {
+                            let list = GitRepoModel(name: data.name, html_url: data.html_url, language: data.language)
+                            self.repoLists.append(list)
+                        }
+                        self.delegate?.sendRepo(data: self.repoLists)
                     }
-                    self.delegate?.sendRepo(data: self.repoLists)
+                case .failure(let error) :
+                    print(error.localizedDescription)
                 }
-            case .failure(let error) :
-                print(error.localizedDescription)
             }
         }
     }
