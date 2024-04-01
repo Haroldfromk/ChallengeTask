@@ -206,7 +206,7 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
             cell.repoLabel.text = repoList[indexPath.row].name
             cell.languageLabel.text = repoList[indexPath.row].language
             cell.selectionStyle = .none
-
+            
             return cell
             
         } else {
@@ -216,7 +216,7 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
             }
             
             cell.start()
-
+            
             
             return cell
         }
@@ -259,16 +259,15 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
     
     func addPage () {
         let currentCount = repoList.count
-        
-        if currentCount > 290 { // 전체 로딩개수가 기준을 넘어가면 false
-            hasNext = false
-        }
-        
+
         if hasNext {
             currentPage += 1
             gitManager.fetchRequestAppleRepo(page: currentPage, hasNext: hasNext)
             isLoadingPage = false
             
+            if currentCount > 290 { // 전체 로딩개수가 기준을 넘어가면 false
+                hasNext = false
+            }
         }
     }
     
