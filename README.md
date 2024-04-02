@@ -17,6 +17,7 @@
 ## :baby_chick: Demo
 <p float="left">
     <img src="https://i.ibb.co/QHDf2Gc/Simulator-Screenshot-i-Phone-15-Pro-2024-04-02-at-12-09-43.png" alt="Simulator-Screenshot-i-Phone-15-Pro-2024-04-02-at-12-09-43" width="200">
+    <img src="https://i.ibb.co/rmY0nTq/simulator-screenshot-F52-CCA41-A013-4-B90-884-B-CC23-DDA1-B28-E.png" alt="simulator-screenshot-F52-CCA41-A013-4-B90-884-B-CC23-DDA1-B28-E" width="200">
     <img src="https://i.ibb.co/BN3RyBd/Apr-02-2024-12-13-26.gif" alt="Apr-02-2024-12-13-26" height=434, width=200>
     <img src="https://i.ibb.co/cvQDjhY/Apr-02-2024-12-12-28.gif" alt="Apr-02-2024-12-12-28" height=434, width=200>
 </p>
