@@ -10,7 +10,7 @@ class ViewController: UIViewController {
     var gitList: [GitModel] = []
     var repoList = [GitRepoModel]()
     
-    var currentPage = 9
+    var currentPage = 1
     var isLoadingPage: Bool = false
     var isHasNext: Bool = true
     
