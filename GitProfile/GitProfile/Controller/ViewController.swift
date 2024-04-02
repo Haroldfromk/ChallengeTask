@@ -10,9 +10,9 @@ class ViewController: UIViewController {
     var gitList: [GitModel] = []
     var repoList = [GitRepoModel]()
     
-    var currentPage = 1
+    var currentPage = 9
     var isLoadingPage: Bool = false
-    var hasNext: Bool = true
+    var isHasNext: Bool = true
     
     
     // MARK: - 프로필 이미지
@@ -78,7 +78,6 @@ class ViewController: UIViewController {
     var tableView : UITableView = {
         var table = UITableView()
         table.translatesAutoresizingMaskIntoConstraints = false
-        //table.register(UITableViewCell.self, forCellReuseIdentifier: Constants.identifier)
         table.register(UINib(nibName: Constants.cellName, bundle: nil), forCellReuseIdentifier: Constants.identifier)
         
         table.register(UINib(nibName: Constants.secondCellName, bundle: nil), forCellReuseIdentifier: Constants.secondCellName)
@@ -97,9 +96,10 @@ class ViewController: UIViewController {
         gitManager.delegate = self
         
         activateConstraints()
+        
         gitManager.fetchRequest()
         gitManager.fetchRequestRepo()
-        gitManager.fetchRequestAppleRepo(page: currentPage, hasNext: hasNext)
+        gitManager.fetchRequestAppleRepo(page: currentPage, hasNext: isHasNext)
         tableView.refreshControl = UIRefreshControl()
         tableView.refreshControl?.addTarget(self, action: #selector(didPullToRefresh), for: .valueChanged)
         
@@ -115,7 +115,7 @@ class ViewController: UIViewController {
     @objc func didPullToRefresh() {
         currentPage = 1
         gitManager.fetchRequestRepo()
-        gitManager.fetchRequestAppleRepo(page: currentPage, hasNext: hasNext)
+        gitManager.fetchRequestAppleRepo(page: currentPage, hasNext: isHasNext)
         DispatchQueue.main.asyncAfter(deadline: .now()+1) {
             self.tableView.refreshControl?.endRefreshing()
             self.tableView.reloadData()
@@ -125,6 +125,7 @@ class ViewController: UIViewController {
     
     // MARK: - Autolayout
     func activateConstraints() {
+        
         view.addSubview(profileImageView)
         view.addSubview(idLabel)
         view.addSubview(nameLabel)
@@ -184,22 +185,31 @@ class ViewController: UIViewController {
 // MARK: - TableView 기능
 extension ViewController: UITableViewDelegate, UITableViewDataSource {
     
+    // 로딩셀을 표시하기 위해 섹션을 2개로 설정
+    func numberOfSections(in tableView: UITableView) -> Int {
+        
+        return 2
+        
+    }
+    
+    // 2개의 섹션을 분배
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
-        if section == 0 {
+        if section == 0 { // 2개의 섹션중 하나에만 repolist 사용
             
             return repoList.count
             
-        } else if section == 1 && isLoadingPage && hasNext {
+        } else if section == 1 && isLoadingPage && isHasNext {
             
-            return 1
+            return 1 // 두번째 섹션은 아직 페이지가 남아있을경우, 로딩중인 모습을 표현하기 위해 사용.
         }
         
         return 0
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if indexPath.section == 0 {
+        
+        if indexPath.section == 0 { // 첫번째 Section의 Cell에는 repoList의 값을 담는다.
             
             guard let cell = tableView.dequeueReusableCell(withIdentifier: Constants.identifier, for: indexPath) as? RepoTableViewCell else { return UITableViewCell() }
             
@@ -209,14 +219,11 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
             
             return cell
             
-        } else {
+        } else { // 두번째 Section의 Cell은 로딩화면을 보여줄 Cell을 사용.
             
-            guard let cell = tableView.dequeueReusableCell(withIdentifier: Constants.secondCellName, for: indexPath) as? LoadingCell else {
-                return UITableViewCell()
-            }
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: Constants.secondCellName, for: indexPath) as? LoadingCell else { return UITableViewCell() }
             
-            cell.start()
-            
+            cell.loadingAction() // 로딩 애니메이션 시작.
             
             return cell
         }
@@ -224,12 +231,18 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
     
     // 셀 클릭했을때 해당 repository 이동.
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
         if let url = URL(string: repoList[indexPath.row].html_url) {
             UIApplication.shared.open(url)
         }
+        
     }
     
+    // MARK: - 페이징
+    
+    // 스크롤을 Tableview의 끝에서 더 내렸을때 로딩을 하기위한 함수.
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        
         let offsetY = scrollView.contentOffset.y
         let contentHeight = scrollView.contentSize.height
         let height = scrollView.frame.height
@@ -246,41 +259,39 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
     
     func loadPage () {
         
-        isLoadingPage = true
+        isLoadingPage = true // 로드가 되는동안에는 true로 하여 브레이크를 준다 dispatchQueue 실행 전에 더 내려서 발생하는 함수 재호출 방지
         
         DispatchQueue.main.async { // 섹션 1을 로딩
             self.tableView.reloadSections(IndexSet(integer: 1), with: .none)
         }
         
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { // 1초뒤 실행
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { // 1초뒤 실행, 무분별한 로딩을 방지
             self.addPage()
         }
     }
     
     func addPage () {
-        let currentCount = repoList.count
 
-        if hasNext {
+        if isHasNext {
             currentPage += 1
-            gitManager.fetchRequestAppleRepo(page: currentPage, hasNext: hasNext)
+            gitManager.fetchRequestAppleRepo(page: currentPage, hasNext: isHasNext)
             isLoadingPage = false
-            
-            if currentCount > 290 { // 전체 로딩개수가 기준을 넘어가면 false
-                hasNext = false
-            }
+    
         }
     }
     
-    // 로딩셀을 표시하기 위해
-    func numberOfSections(in tableView: UITableView) -> Int {
-        return 2
-    }
+    
     
 }
 
 
 // MARK: - GitManager로부터 User, repo정보를 받아온다.
 extension ViewController: SendProfile {
+    
+    func sendNext(hasNext: Bool) {
+        isHasNext = hasNext
+    }
+    
     
     func sendRepo(data: [GitRepoModel]) {
         repoList = data
@@ -292,7 +303,7 @@ extension ViewController: SendProfile {
     func sendData(data: [GitModel]) {
         gitList = data
         DispatchQueue.main.async {
-            self.profileImageView.kf.setImage(with: URL(string: self.gitList[0].avatar_url))
+            self.profileImageView.kf.setImage(with: URL(string: self.gitList[0].avatar_url)) // kingfisher를 사용하여 image url을 적용
             self.idLabel.text = "User ID : \(self.gitList[0].login)"
             self.nameLabel.text = "Name : \(self.gitList[0].name)"
             self.regionLabel.text = "Location : \(self.gitList[0].location)"

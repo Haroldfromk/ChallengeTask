@@ -16,7 +16,7 @@ class LoadingCell: UITableViewCell {
         // Configure the view for the selected state
     }
     
-    func start() {
+    func loadingAction() {
         activityIndicator.startAnimating()
     }
     
