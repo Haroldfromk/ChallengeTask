@@ -1,4 +1,4 @@
-**
+
 # 🔎 MyGit App 
 
 [![license](https://img.shields.io/badge/License-AGPL-red)](https://github.com/NDjust/Generate-HeadLine/blob/master/LICENSE)
@@ -20,6 +20,7 @@
     <img src="https://i.ibb.co/rmY0nTq/simulator-screenshot-F52-CCA41-A013-4-B90-884-B-CC23-DDA1-B28-E.png" alt="simulator-screenshot-F52-CCA41-A013-4-B90-884-B-CC23-DDA1-B28-E" width="200">
     <img src="https://i.ibb.co/BN3RyBd/Apr-02-2024-12-13-26.gif" alt="Apr-02-2024-12-13-26" height=434, width=200>
     <img src="https://i.ibb.co/cvQDjhY/Apr-02-2024-12-12-28.gif" alt="Apr-02-2024-12-12-28" height=434, width=200>
+    <img src="https://i.ibb.co/2NtdS2y/Apr-02-2024-13-42-21.gif" alt="Apr-02-2024-13-42-21" height=434, width=200>
 </p>
 
 ## ⭐ Main Feature
@@ -31,6 +32,9 @@
 
 ### 페이징 기능
 - Repository가 많아도 스크롤 다운으로 로딩도 한번에
+
+### 새로고침 기능
+- Pull to Refresh 방식으로 위로 올려서 새로고침도 가능하게
 
 ## 🔧 Stack
 - **Language**: Swift
@@ -56,4 +60,3 @@ ToDoList
 
 ## 👨‍👩‍👧‍👦 Developer
 *  **송동익** ([haroldfromk](https://github.com/Haroldfromk/))
-**
