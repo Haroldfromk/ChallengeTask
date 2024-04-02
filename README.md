@@ -38,7 +38,7 @@
 
 ## 🔧 Stack
 - **Language**: Swift
-- **Api** : GitRHub REST API
+- **API** : GitHub REST API
 
 ## :open_file_folder: Project Structure
 
