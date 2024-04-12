@@ -9,8 +9,8 @@ import Foundation
 
 struct Constants {
     
-    static var identifier = "RepoCell"
-    static var cellName = "RepoTableViewCell"
-    static var secondCellName = "LoadingCell"
+    static let identifier = "RepoCell"
+    static let cellName = "RepoTableViewCell"
+    static let secondCellName = "LoadingCell"
     
 }

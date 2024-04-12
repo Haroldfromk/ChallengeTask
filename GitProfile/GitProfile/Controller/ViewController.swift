@@ -6,10 +6,7 @@ import Kingfisher
 class ViewController: UIViewController {
     
     let gitManager = GitManager()
-    
-    var gitList: [GitModel] = []
     var repoList = [GitRepoModel]()
-    
     var currentPage = 1
     var isLoadingPage: Bool = false
     var isHasNext: Bool = true
@@ -19,7 +16,6 @@ class ViewController: UIViewController {
     var profileImageView: UIImageView = {
         var imageView = UIImageView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
-        
         return imageView
     }()
     
@@ -29,8 +25,6 @@ class ViewController: UIViewController {
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = "id"
         label.textAlignment = .left
-        
-        
         return label
     }()
     
@@ -40,7 +34,6 @@ class ViewController: UIViewController {
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = "name"
         label.textAlignment = .left
-        
         return label
     }()
     
@@ -50,7 +43,6 @@ class ViewController: UIViewController {
         label.text = "region"
         label.textAlignment = .left
         label.translatesAutoresizingMaskIntoConstraints = false
-        
         return label
     }()
     
@@ -60,7 +52,6 @@ class ViewController: UIViewController {
         label.text = "Follwer"
         label.textAlignment = .left
         label.translatesAutoresizingMaskIntoConstraints = false
-        
         return label
     }()
     
@@ -70,7 +61,6 @@ class ViewController: UIViewController {
         label.text = "Following"
         label.textAlignment = .left
         label.translatesAutoresizingMaskIntoConstraints = false
-        
         return label
     }()
     
@@ -79,16 +69,13 @@ class ViewController: UIViewController {
         var table = UITableView()
         table.translatesAutoresizingMaskIntoConstraints = false
         table.register(UINib(nibName: Constants.cellName, bundle: nil), forCellReuseIdentifier: Constants.identifier)
-        
         table.register(UINib(nibName: Constants.secondCellName, bundle: nil), forCellReuseIdentifier: Constants.secondCellName)
-        
         return table
     }()
     
-    
     override func viewDidLoad() {
+        
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
         view.backgroundColor = .systemBackground
         
         tableView.delegate = self
@@ -105,21 +92,18 @@ class ViewController: UIViewController {
         
     }
     
-    override func viewDidAppear(_ animated: Bool) {
-        
-    }
-    
-    
     // MARK: - Pull To Refresh
     
     @objc func didPullToRefresh() {
         currentPage = 1
         gitManager.fetchRequestRepo()
         gitManager.fetchRequestAppleRepo(page: currentPage, hasNext: isHasNext)
+        
         DispatchQueue.main.asyncAfter(deadline: .now()+1) {
             self.tableView.refreshControl?.endRefreshing()
             self.tableView.reloadData()
         }
+        
     }
     
     
@@ -134,8 +118,8 @@ class ViewController: UIViewController {
         view.addSubview(followingLabel)
         view.addSubview(tableView)
         
-        let imageViewConstraints = [profileImageView.heightAnchor.constraint(equalToConstant: 150),
-                                    profileImageView.widthAnchor.constraint(equalToConstant: 150)
+        let imageViewConstraints = [profileImageView.heightAnchor.constraint(equalToConstant: 150)
+                                    ,profileImageView.widthAnchor.constraint(equalToConstant: 150)
                                     ,profileImageView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor,constant: 10)
                                     ,profileImageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor)
         ]
@@ -177,6 +161,7 @@ class ViewController: UIViewController {
         NSLayoutConstraint.activate(followerLabelConstraints)
         NSLayoutConstraint.activate(followingLabelConstraints)
         NSLayoutConstraint.activate(tableViewConstraints)
+        
     }
     
 }
@@ -187,101 +172,73 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
     
     // 로딩셀을 표시하기 위해 섹션을 2개로 설정
     func numberOfSections(in tableView: UITableView) -> Int {
-        
         return 2
-        
     }
     
     // 2개의 섹션을 분배
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        
         if section == 0 { // 2개의 섹션중 하나에만 repolist 사용
-            
             return repoList.count
-            
         } else if section == 1 && isLoadingPage && isHasNext {
-            
             return 1 // 두번째 섹션은 아직 페이지가 남아있을경우, 로딩중인 모습을 표현하기 위해 사용.
         }
-        
         return 0
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         if indexPath.section == 0 { // 첫번째 Section의 Cell에는 repoList의 값을 담는다.
-            
             guard let cell = tableView.dequeueReusableCell(withIdentifier: Constants.identifier, for: indexPath) as? RepoTableViewCell else { return UITableViewCell() }
-            
             cell.repoLabel.text = repoList[indexPath.row].name
             cell.languageLabel.text = repoList[indexPath.row].language
             cell.selectionStyle = .none
-            
             return cell
-            
         } else { // 두번째 Section의 Cell은 로딩화면을 보여줄 Cell을 사용.
-            
             guard let cell = tableView.dequeueReusableCell(withIdentifier: Constants.secondCellName, for: indexPath) as? LoadingCell else { return UITableViewCell() }
-            
             cell.loadingAction() // 로딩 애니메이션 시작.
-            
             return cell
         }
     }
     
     // 셀 클릭했을때 해당 repository 이동.
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
-        if let url = URL(string: repoList[indexPath.row].html_url) {
+        if let url = URL(string: repoList[indexPath.row].htmlUrl) {
             UIApplication.shared.open(url)
         }
-        
     }
     
     // MARK: - 페이징
     
     // 스크롤을 Tableview의 끝에서 더 내렸을때 로딩을 하기위한 함수.
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        
         let offsetY = scrollView.contentOffset.y
         let contentHeight = scrollView.contentSize.height
         let height = scrollView.frame.height
-        
         // 스크롤이 테이블 뷰 Offset의 끝에 가게 되면 다음 페이지를 호출
         if offsetY > (contentHeight - height) {
             if isLoadingPage == false {
-                
                 loadPage()
-                
             }
         }
     }
     
     func loadPage () {
-        
         isLoadingPage = true // 로드가 되는동안에는 true로 하여 브레이크를 준다 dispatchQueue 실행 전에 더 내려서 발생하는 함수 재호출 방지
-        
         DispatchQueue.main.async { // 섹션 1을 로딩
             self.tableView.reloadSections(IndexSet(integer: 1), with: .none)
         }
-        
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { // 1초뒤 실행, 무분별한 로딩을 방지
             self.addPage()
         }
     }
     
     func addPage () {
-
         if isHasNext {
             currentPage += 1
             gitManager.fetchRequestAppleRepo(page: currentPage, hasNext: isHasNext)
             isLoadingPage = false
-    
         }
     }
-    
-    
-    
 }
 
 
@@ -292,7 +249,6 @@ extension ViewController: SendProfile {
         isHasNext = hasNext
     }
     
-    
     func sendRepo(data: [GitRepoModel]) {
         repoList = data
         DispatchQueue.main.async {
@@ -300,15 +256,16 @@ extension ViewController: SendProfile {
         }
     }
     
-    func sendData(data: [GitModel]) {
-        gitList = data
-        DispatchQueue.main.async {
-            self.profileImageView.kf.setImage(with: URL(string: self.gitList[0].avatar_url)) // kingfisher를 사용하여 image url을 적용
-            self.idLabel.text = "User ID : \(self.gitList[0].login)"
-            self.nameLabel.text = "Name : \(self.gitList[0].name)"
-            self.regionLabel.text = "Location : \(self.gitList[0].location)"
-            self.followerLabel.text = "Follower : \(String(self.gitList[0].followers))"
-            self.followingLabel.text = "Following : \(String(self.gitList[0].following))"
+    func sendData(data: GitModel?) {
+        if let gitList = data {
+            DispatchQueue.main.async {
+                self.profileImageView.kf.setImage(with: URL(string: gitList.avatarUrl)) // kingfisher를 사용하여 image url을 적용
+                self.idLabel.text = "User ID : \(gitList.login)"
+                self.nameLabel.text = "Name : \(gitList.name)"
+                self.regionLabel.text = "Location : \(gitList.location)"
+                self.followerLabel.text = "Follower : \(String(gitList.followers))"
+                self.followingLabel.text = "Following : \(String(gitList.following))"
+            }
         }
     }
 }

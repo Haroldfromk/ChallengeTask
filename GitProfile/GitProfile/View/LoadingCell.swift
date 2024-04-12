@@ -20,4 +20,7 @@ class LoadingCell: UITableViewCell {
         activityIndicator.startAnimating()
     }
     
+    override func prepareForReuse() {
+        activityIndicator.stopAnimating()
+    }
 }
